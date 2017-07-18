@@ -9,3 +9,11 @@ rel/example_project
 .concrete/DEV_MODE
 .rebar
 _build
+include/kaa.hrl
+include/kaa_error.hrl
+include/kaa_result.hrl
+include/kaa_worker.hrl
+src/kaa.erl
+src/kaa_error.erl
+src/kaa_result.erl
+src/kaa_worker.erl
