@@ -1,0 +1,5 @@
+// KaaWorker holds the jun pid, so when initializes a new worker
+// the client can send to initiate the handshake
+message KaaWorker {
+    required string jun_worker = 1;
+}
