@@ -3,7 +3,9 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0]).
+-export([start_link/0,
+    get_worker/1,
+    kaa_proto_in/2]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -16,19 +18,33 @@
 % the values can be override during initialization
 -record(state, {jun_worker = undefined :: pid(),
     mon_ref = undefined :: reference(),
-    queue = queue:new() :: undefined}).
+    queue = queue:new() :: undefined,
+    key = <<"kaa">> :: binary()}).
 
 start_link() ->
-    gen_server:start_link(?MODULE, [], []).
+    % generates a random key
+    Key = r_key(),
+    {ok, Pid} = gen_server:start_link(?MODULE, [Key], []),
+    % register process using syn
+    ok = syn:register(Key, Pid),
+    {ok, Key}.
 
-init([]) ->
+get_worker(Key) ->
+    Pid = syn:find_by_key(Key),
+    gen_server:call(Pid, get_worker).
+
+kaa_proto_in(Key, PBMsg) ->
+    Pid = syn:find_by_key(Key),
+    gen_server:call(Pid, {kaa_proto_in, PBMsg}).
+
+init([Key]) ->
     process_flag(trap_exit, true),
     % start the py process and initializes its importing modules
     case jun_worker:start_link() of
         {ok, JunPid} ->
             MonRef = erlang:monitor(process, JunPid),
             lager:info("initialized jun worker pid ~p", [JunPid]),
-            {ok, #state{jun_worker = JunPid, mon_ref = MonRef}};
+            {ok, #state{jun_worker = JunPid, mon_ref = MonRef, key = Key}};
         Error      ->
             lager:error("cannot initializes jun worker due to ~p", [Error]),
             {stop, Error}
@@ -55,7 +71,9 @@ handle_info({'DOWN', MonRef, _Type, _Object, _Info}, State=#state{mon_ref = MonR
 handle_info(_Info, State) ->
     {noreply, State}.
 
-terminate(_Reason, _State) ->
+terminate(_Reason, State) ->
+    Key = State#state.key,
+    ok = syn:unregister(Key),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->
@@ -64,3 +82,12 @@ code_change(_OldVsn, State, _Extra) ->
 %% ===================================
 %% Internal Funcionts
 %% ===================================
+
+r_key() ->
+    Seq = lists:seq(1, 100),
+    Chars = "abcdeefghijklmnopqrstuvwxyz",
+    R = lists:foldl(fun(_, Acc) ->
+        L = length(Chars),
+        [ lists:nth(rand:uniform(L), Chars) | Acc]
+    end, [], Seq),
+    list_to_binary(R).
