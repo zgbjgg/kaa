@@ -1,0 +1,39 @@
+// Kaa is the main message in proto to manipulate dataframes
+// please check the submessages and the enums to better compatibility.
+message Kaa {
+    required mods module = 1;
+    required funs function = 2;
+    required string jun_worker = 3;
+    oneof arguments {
+        string path = 1; // for now if no manipulation, then load!
+        m_frame frame = 2;
+    }
+}
+
+// m_frame represents the arguments for functions
+// to manipulate dataframes
+message m_frame {
+    required bytes dataframe = 1;
+    required string axis = 2;    
+}
+
+// mods is an enum for erlang module, this case default is `jun_pandas`
+enum mods {
+    jun_pandas = 0;
+}
+
+// funs is an enum for erlang functions inside mods
+enum funs {
+    // Serialization / IO / Conversion
+    read_csv = 0;
+
+    // Computations / Descriptive Stats
+    sum = 1;
+    max = 2;
+    min = 3;
+    count = 4;
+    median = 5;
+
+    // Indexing, iteration
+    query = 6;
+}
