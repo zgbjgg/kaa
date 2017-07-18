@@ -7,7 +7,7 @@ KAA is a library written in erlang to send and receive tasks to a `JUN` worker t
 
 This project is under development and should not be used in production, it's not ready for that.
 
-#### Creating the environment
+### Creating the environment
 
 To create a new kaa worker (that also creates a jun worker onto it):
 
@@ -20,7 +20,7 @@ To create a new kaa worker (that also creates a jun worker onto it):
 
 This will create and hold the environment for kaa and jun, so kaa can now receive messages encoded into a protocol buffers and pass to the jun worker, receive the response and delivered as proto message.
 
-#### Building a proto messages
+### Building a proto messages
 
 Now we are executing some tasks into jun, but using the proto messages in kaa format, so for example, let's generate a message to read a csv into dataframe:
 
@@ -50,6 +50,8 @@ Now we have a `Result` variable with a proto message in a binary format, let's d
                                    117,101,100,0,6,...>>}}
 ```
 
+### Working with dataframes
+
 Now we have a decoded result, the dataframe read by the read_csv function, lets play with the dataframe, first to all get only the dataframe value:
 
 ```erlang
@@ -78,11 +80,11 @@ We have now the sum instruction into a proto message format, let's send to kaa a
 
 Ready!, if check the result we have an inumber with a value of 13 which is the correct sum of all columns!
 
-#### See also
+### See also
 
 [JUN: python pandas support for dataframes manipulation over erlang](https://github.com/zgbjgg/jun)
 
-#### Authors
+### Authors
 
 @zgbjgg Jorge Garrido <zgbjgg@gmail.com>
 
