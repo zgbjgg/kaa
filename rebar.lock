@@ -15,6 +15,10 @@
  {<<"lager">>,
   {git,"https://github.com/erlang-lager/lager",
        {ref,"c3970a99131c7c73de7eba3c2a569806fe47e40a"}},
+  0},
+ {<<"syn">>,
+  {git,"https://github.com/ostinelli/syn",
+       {ref,"43701a66391261db35d9f6f3e52eca2523476002"}},
   0}]}.
 [
 {pkg_hash,[
