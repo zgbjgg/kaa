@@ -1,0 +1,10 @@
+// KaaResult is for common result 
+message KaaResult {
+    required string ok = 1;
+    oneof result {
+        int64 inumber = 1;
+        double dnumber = 2;
+        bytes dataframe = 3;
+    }
+}
+

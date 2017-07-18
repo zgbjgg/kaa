@@ -1,0 +1,5 @@
+// KaaError is for common errors
+message KaaError {
+    required string error = 1;
+    optional string description = 2;
+}
