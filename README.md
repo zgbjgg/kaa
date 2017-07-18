@@ -1,5 +1,5 @@
 # kaa
-[![Kaa](https://user-images.githubusercontent.com/1471055/28333979-4c770d16-6bbf-11e7-90b1-a394d6e7e414.png)
+[Kaa](https://user-images.githubusercontent.com/1471055/28333979-4c770d16-6bbf-11e7-90b1-a394d6e7e414.png)
 
 **KAA** - support to execute jun tasks using protocol buffers
 
