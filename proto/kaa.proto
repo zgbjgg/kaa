@@ -14,7 +14,8 @@ message Kaa {
 // to manipulate dataframes
 message m_frame {
     required bytes dataframe = 1;
-    required string axis = 2;    
+    optional string axis = 2;
+    repeated Keywords keywords = 3;
 }
 
 // mods is an enum for erlang module, this case default is `jun_pandas`
@@ -26,6 +27,9 @@ enum mods {
 enum funs {
     // Serialization / IO / Conversion
     read_csv = 0;
+    to_csv = 7;
+    to_html = 8;
+    to_json = 9;
 
     // Computations / Descriptive Stats
     sum = 1;
@@ -36,4 +40,10 @@ enum funs {
 
     // Indexing, iteration
     query = 6;
+}
+
+// for keywords in some fun
+message Keywords {
+    required string key = 1;
+    required string value = 2;
 }
