@@ -44,9 +44,19 @@ exec(PBMsg) when is_binary(PBMsg)     ->
 
 exec_jun({path, Path}, JunWorker, Mod, Fn) ->
     Mod:Fn(JunWorker, list_to_atom(Path));
-exec_jun({frame, #m_frame{dataframe = DataFrame, axis = Axis}}, JunWorker,
-        Mod, Fn) ->
-    Mod:Fn(JunWorker, binary_to_term(DataFrame), list_to_atom(Axis)).
+exec_jun({frame, #m_frame{dataframe = DataFrame, axis = Axis, keywords = Keywords}},
+        JunWorker, Mod, Fn) ->
+    % parse keywords in order to convert to a plist for jun
+    Keywords0 = lists:map(fun(#'Keywords'{key = Key, value = Value}) ->
+        {list_to_atom(Key), list_to_atom(Value)}
+    end, Keywords),
+    % maybe dont use axis, this must be optional in proto
+    case Axis of
+        undefined ->
+            Mod:Fn(JunWorker, binary_to_term(DataFrame), Keywords0);
+        _         ->
+            Mod:Fn(JunWorker, binary_to_term(DataFrame), list_to_atom(Axis), Keywords0)
+    end.
 
 %% @hidden
 
@@ -59,6 +69,12 @@ encode_result({ok, I}) when is_integer(I)                       ->
     kaa_result:encode_msg(KaaResult);
 encode_result({ok, F}) when is_float(F)                         ->
     KaaResult = #'KaaResult'{ok = "ok", result = {dnumber, F}},
+    kaa_result:encode_msg(KaaResult);
+encode_result({ok, B}) when is_binary(B)                        ->
+    KaaResult = #'KaaResult'{ok = "ok", result = {string, binary_to_list(B)}},
+    kaa_result:encode_msg(KaaResult);
+encode_result({ok, S}) when is_list(S)                          ->
+    KaaResult = #'KaaResult'{ok = "ok", result = {string, S}},
     kaa_result:encode_msg(KaaResult);
 encode_result({error, {Error, Description}})                    ->
     KaaError = #'KaaError'{error = atom_to_list(Error),
