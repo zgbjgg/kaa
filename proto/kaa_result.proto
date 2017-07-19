@@ -5,6 +5,7 @@ message KaaResult {
         int64 inumber = 1;
         double dnumber = 2;
         bytes dataframe = 3;
+        string string = 4;
     }
 }
 
