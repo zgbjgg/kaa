@@ -1,0 +1,19 @@
+language: erlang
+script: "make && make test"
+install:
+  - sudo pip install numpy
+  - sudo pip install pandas
+  - sudo pip install matplotlib
+  - sudo pip install sklearn
+  - sudo pip install scipy
+otp_release:
+- 20.0
+- 19.3
+- 19.2
+- 19.1
+- 19.0
+- 18.3
+- 18.2.1
+- 18.2
+- 18.1
+- 18.0
