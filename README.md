@@ -3,6 +3,7 @@
 
 **KAA** - support to execute jun tasks using protocol buffers
 
+[![Build Status](https://travis-ci.org/zgbjgg/kaa.svg?branch=master)](https://travis-ci.org/zgbjgg/kaa)
 [![License: MIT](https://img.shields.io/github/license/zgbjgg/kaa.svg)](https://raw.githubusercontent.com/zgbjgg/kaa/master/LICENSE)
 
 KAA is a library written in erlang to send and receive tasks to a `JUN` worker through a protocol buffers, so then any client implementing the proto files can send messages to `JUN`.
