@@ -2,10 +2,10 @@
 message KaaResult {
     required string ok = 1;
     oneof result {
-        int64 inumber = 1;
-        double dnumber = 2;
-        bytes dataframe = 3;
-        string string = 4;
+        int64 inumber = 2;
+        double dnumber = 3;
+        bytes dataframe = 4;
+        string string = 5;
     }
 }
 

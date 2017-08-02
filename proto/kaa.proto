@@ -5,8 +5,8 @@ message Kaa {
     required funs function = 2;
     required string jun_worker = 3;
     oneof arguments {
-        string path = 1; // for now if no manipulation, then load!
-        m_frame frame = 2;
+        string path = 4; // for now if no manipulation, then load!
+        m_frame frame = 5;
     }
 }
 
