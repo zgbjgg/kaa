@@ -2,10 +2,13 @@
 
 -behaviour(gen_server).
 
+-include("kaa_core.hrl").
+
 %% API
 -export([start_link/0,
     get_worker/1,
-    kaa_proto_in/2]).
+    kaa_proto_in/2,
+    r_key/0]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -18,7 +21,7 @@
 % the values can be override during initialization
 -record(state, {jun_worker = undefined :: pid(),
     mon_ref = undefined :: reference(),
-    queue = queue:new() :: undefined,
+    storage = undefined :: atom(),
     key = <<"kaa">> :: binary()}).
 
 start_link() ->
@@ -44,7 +47,9 @@ init([Key]) ->
         {ok, JunPid} ->
             MonRef = erlang:monitor(process, JunPid),
             lager:info("initialized jun worker pid ~p", [JunPid]),
-            {ok, #state{jun_worker = JunPid, mon_ref = MonRef, key = Key}};
+            Storage = ets:new(?KAA_ENVIRONMENT, [named_table, public]),
+            {ok, #state{jun_worker = JunPid, mon_ref = MonRef, key = Key,
+                storage = Storage}};
         Error      ->
             lager:error("cannot initializes jun worker due to ~p", [Error]),
             {stop, Error}
