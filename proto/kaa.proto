@@ -13,7 +13,7 @@ message Kaa {
 // m_frame represents the arguments for functions
 // to manipulate dataframes
 message m_frame {
-    required bytes dataframe = 1;
+    required string dataframe = 1;
     optional string axis = 2;
     repeated Keywords keywords = 3;
 }
