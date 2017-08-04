@@ -38,7 +38,7 @@ get_worker(Key) ->
 
 kaa_proto_in(Key, PBMsg) ->
     Pid = syn:find_by_key(Key),
-    gen_server:call(Pid, {kaa_proto_in, PBMsg}).
+    gen_server:call(Pid, {kaa_proto_in, PBMsg}, infinity).
 
 init([Key]) ->
     process_flag(trap_exit, true),
