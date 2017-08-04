@@ -4,7 +4,7 @@ message KaaResult {
     oneof result {
         int64 inumber = 2;
         double dnumber = 3;
-        bytes dataframe = 4;
+        string dataframe = 4;
         string string = 5;
     }
 }
