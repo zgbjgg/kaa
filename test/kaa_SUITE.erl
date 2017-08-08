@@ -17,6 +17,7 @@
     test_kaa_proto_in_double/1,
     test_kaa_proto_in_string/1,
     test_kaa_proto_in_binary/1,
+    test_kaa_proto_in_columns/1,
     test_kaa_get_worker_non_pid/1,
     test_kaa_exec_no_binary/1,
     test_kaa_exec_no_proto_msg/1,
@@ -32,6 +33,7 @@ all() ->
      test_kaa_proto_in_double,
      test_kaa_proto_in_string,
      test_kaa_proto_in_binary,
+     test_kaa_proto_in_columns,
      test_kaa_get_worker_non_pid,
      test_kaa_exec_no_binary,
      test_kaa_exec_no_proto_msg,
@@ -127,6 +129,15 @@ test_kaa_proto_in_error([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     {ok, PbOutSum} = kaa_main_worker:kaa_proto_in(Key, SumIns),
     #'KaaError'{error = Error} = kaa_error:decode_msg(PbOutSum, 'KaaError'),
     ?assertEqual("exceptions.KeyError", Error).
+
+test_kaa_proto_in_columns([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
+    {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
+    #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
+    {dataframe, DataFrame} = R,
+    ColumnsIns = common_instruction(Worker, DataFrame, columns, none, []),
+    {ok, PbOutColumns} = kaa_main_worker:kaa_proto_in(Key, ColumnsIns),
+    #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutColumns, 'KaaResult'),
+    ?assertMatch({string, _}, Result).
 
 %% other errors directly to kaa_proto
 
