@@ -40,6 +40,9 @@ enum funs {
 
     // Indexing, iteration
     query = 6;
+
+    // Helpers
+    columns = 10;
 }
 
 // for keywords in some fun
