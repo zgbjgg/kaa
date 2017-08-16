@@ -52,7 +52,13 @@ exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
         undefined ->
             Mod:Fn(JunWorker, DataFrame, Keywords0);
         _         ->
-            Mod:Fn(JunWorker, DataFrame, list_to_atom(Axis), Keywords0)
+            % this rare condition happens when jun tries to use a integer value as
+            % argument of a function, for example, head or tail.
+            % a function could receive a float value?, if so, then parse.
+            case catch list_to_integer(Axis) of
+                {'EXIT', _} -> Mod:Fn(JunWorker, DataFrame, list_to_atom(Axis), Keywords0);
+                AxisInt     -> Mod:Fn(JunWorker, DataFrame, AxisInt, Keywords0)
+            end
     end.
 
 %% @hidden
