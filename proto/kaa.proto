@@ -43,6 +43,10 @@ enum funs {
 
     // Helpers
     columns = 10;
+    len_columns = 11;
+    len_index = 12;
+    memory_usage = 13;
+    info_columns = 14;
 }
 
 // for keywords in some fun
