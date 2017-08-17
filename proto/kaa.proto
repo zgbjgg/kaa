@@ -12,6 +12,7 @@ message Kaa {
 
 // m_frame represents the arguments for functions
 // to manipulate dataframes
+// for plotting use axis as save argument
 message m_frame {
     required string dataframe = 1;
     optional string axis = 2;
@@ -49,6 +50,9 @@ enum funs {
     len_index = 12;
     memory_usage = 13;
     info_columns = 14;
+
+    // Plotting
+    plot = 17;
 }
 
 // for keywords in some fun
