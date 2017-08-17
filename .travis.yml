@@ -1,6 +1,7 @@
 language: erlang
 script: "make && make test"
 install:
+  - sudo apt-get install python-tk
   - sudo pip install numpy
   - sudo pip install pandas
   - sudo pip install matplotlib
