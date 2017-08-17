@@ -21,7 +21,8 @@
     test_kaa_get_worker_non_pid/1,
     test_kaa_exec_no_binary/1,
     test_kaa_exec_no_proto_msg/1,
-    test_kaa_proto_in_error/1]).
+    test_kaa_proto_in_error/1,
+    test_kaa_proto_plotting/1]).
 
 all() ->
     [test_kaa_worker,
@@ -37,7 +38,8 @@ all() ->
      test_kaa_get_worker_non_pid,
      test_kaa_exec_no_binary,
      test_kaa_exec_no_proto_msg,
-     test_kaa_proto_in_error].
+     test_kaa_proto_in_error,
+     test_kaa_proto_plotting].
 
 init_per_testcase(_, _Config) ->
     ok = application:start(mnesia),
@@ -137,6 +139,17 @@ test_kaa_proto_in_columns([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     ColumnsIns = common_instruction(Worker, DataFrame, columns, none, []),
     {ok, PbOutColumns} = kaa_main_worker:kaa_proto_in(Key, ColumnsIns),
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutColumns, 'KaaResult'),
+    ?assertMatch({string, _}, Result).
+
+test_kaa_proto_plotting([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
+    {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
+    #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
+    {dataframe, DataFrame} = R,
+    PlotIns = common_instruction(Worker, DataFrame, plot, "fig.png", [#'Keywords'{key = "x", value = "name"},
+        #'Keywords'{key = "y", value = "age"},
+        #'Keywords'{key = "kind", value = "bar"}]),
+    {ok, PbOutPlot} = kaa_main_worker:kaa_proto_in(Key, PlotIns),
+     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutPlot, 'KaaResult'),
     ?assertMatch({string, _}, Result).
 
 %% other errors directly to kaa_proto
