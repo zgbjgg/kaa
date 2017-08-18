@@ -6,6 +6,7 @@ message KaaResult {
         double dnumber = 3;
         string dataframe = 4;
         string string = 5;
+        string axesplot = 6;
     }
 }
 
