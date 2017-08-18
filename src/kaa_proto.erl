@@ -63,10 +63,17 @@ exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
 
 %% @hidden
 
-encode_result({ok, {'$erlport.opaque', python, _} = DataFrame}) ->
+encode_result({ok, {?DATAFRAME, {'$erlport.opaque', python, _} = DataFrame}}) ->
     MemId = kaa_main_worker:r_key(),
     true = ets:insert(?KAA_ENVIRONMENT, {binary_to_list(MemId), DataFrame}),
     KaaResult = #'KaaResult'{ok = "ok", result = {dataframe, MemId}},
+    kaa_result:encode_msg(KaaResult);
+% the process of return plotting through pb is complex, since is an opaque term
+% similar to dataframe, so maybe store in an internal storage to execute tasks
+% in the plot after creation.
+encode_result({ok, {?AXESPLOT, {'$erlport.opaque', python, _} = Plot}}) ->
+    PlotBin = term_to_binary(Plot),
+    KaaResult = #'KaaResult'{ok = "ok", result = {axesplot, binary_to_list(PlotBin)}},
     kaa_result:encode_msg(KaaResult);
 encode_result({ok, I}) when is_integer(I)                       ->
     KaaResult = #'KaaResult'{ok = "ok", result = {inumber, I}},
