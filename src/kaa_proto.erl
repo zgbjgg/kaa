@@ -42,7 +42,8 @@ exec_jun({path, Path}, JunWorker, Mod, Fn) ->
     Mod:Fn(JunWorker, list_to_atom(Path));
 exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
         JunWorker, Mod, Fn) ->
-    [{_, DataFrame}] = ets:lookup(?KAA_ENVIRONMENT, MemId),
+    Pid = pid_to_list(self()),
+    [{_, DataFrame}] = ets:lookup(?KAA_ENVIRONMENT(Pid), MemId),
     % parse keywords in order to convert to a plist for jun
     Keywords0 = lists:map(fun(#'Keywords'{key = Key, value = Value}) ->
         {list_to_atom(Key), list_to_atom(Value)}
@@ -64,8 +65,9 @@ exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
 %% @hidden
 
 encode_result({ok, {?DATAFRAME, {'$erlport.opaque', python, _} = DataFrame}}) ->
-    MemId = kaa_main_worker:r_key(),
-    true = ets:insert(?KAA_ENVIRONMENT, {binary_to_list(MemId), DataFrame}),
+    MemId = random_key(),
+    Pid = pid_to_list(self()),
+    true = ets:insert(?KAA_ENVIRONMENT(Pid), {binary_to_list(MemId), DataFrame}),
     KaaResult = #'KaaResult'{ok = "ok", result = {dataframe, MemId}},
     kaa_result:encode_msg(KaaResult);
 % the process of return plotting through pb is complex, since is an opaque term
@@ -91,3 +93,14 @@ encode_result({error, {Error, Description}})                    ->
     KaaError = #'KaaError'{error = atom_to_list(Error),
         description = Description},
     kaa_error:encode_msg(KaaError).
+
+%% @hidden
+
+random_key() ->
+    Seq = lists:seq(1, 100),
+    Chars = "abcdeefghijklmnopqrstuvwxyz",
+    R = lists:foldl(fun(_, Acc) ->
+        L = length(Chars),
+        [ lists:nth(rand:uniform(L), Chars) | Acc]
+    end, [], Seq),
+    list_to_binary(R).

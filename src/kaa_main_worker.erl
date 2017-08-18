@@ -8,7 +8,6 @@
 -export([start_link/0,
     get_worker/1,
     kaa_proto_in/2,
-    r_key/0,
     stop_link/1]).
 
 %% gen_server callbacks
@@ -26,10 +25,9 @@
     key = <<"kaa">> :: binary()}).
 
 start_link() ->
-    % generates a random key
-    Key = r_key(),
-    {ok, Pid} = gen_server:start_link(?MODULE, [Key], []),
+    {ok, Pid} = gen_server:start_link(?MODULE, [], []),
     % register process using syn
+    Key = pid_to_list(Pid),
     ok = syn:register(Key, Pid),
     {ok, Key}.
 
@@ -45,13 +43,14 @@ stop_link(Key) ->
     Pid = syn:find_by_key(Key),
     gen_server:call(Pid, stop_link).
 
-init([Key]) ->
+init([]) ->
     % start the py process and initializes its importing modules
     case jun_worker:start_link() of
         {ok, JunPid} ->
             MonRef = erlang:monitor(process, JunPid),
             lager:info("initialized jun worker pid ~p", [JunPid]),
-            Storage = ets:new(?KAA_ENVIRONMENT, [named_table, public]),
+            Key = pid_to_list(self()),
+            Storage = ets:new(?KAA_ENVIRONMENT(Key), [named_table, public]),
             {ok, #state{jun_worker = JunPid, mon_ref = MonRef, key = Key,
                 storage = Storage}};
         Error      ->
@@ -87,8 +86,9 @@ terminate(_Reason, State) ->
     % terminate the jun worker process
     JunPid = State#state.jun_worker,
     ok = jun_worker:stop_link(JunPid),
-    % also removes syn register
+    % also removes syn register & ets
     Key = State#state.key,
+    true = ets:delete(?KAA_ENVIRONMENT(Key)),
     ok = syn:unregister(Key),
     ok.
 
@@ -98,12 +98,3 @@ code_change(_OldVsn, State, _Extra) ->
 %% ===================================
 %% Internal Funcionts
 %% ===================================
-
-r_key() ->
-    Seq = lists:seq(1, 100),
-    Chars = "abcdeefghijklmnopqrstuvwxyz",
-    R = lists:foldl(fun(_, Acc) ->
-        L = length(Chars),
-        [ lists:nth(rand:uniform(L), Chars) | Acc]
-    end, [], Seq),
-    list_to_binary(R).
