@@ -11,6 +11,7 @@
 -export([test_kaa_worker/1,
     test_kaa_worker_call/1,
     test_kaa_worker_cast/1,
+    test_kaa_worker_stop/1,
     test_kaa_get_worker/1,
     test_kaa_proto_in_path/1,
     test_kaa_proto_in_int/1,
@@ -29,6 +30,7 @@ all() ->
     [test_kaa_worker,
      test_kaa_worker_call,
      test_kaa_worker_cast,
+     test_kaa_worker_stop,
      test_kaa_get_worker,
      test_kaa_proto_in_path,
      test_kaa_proto_in_int,
@@ -62,8 +64,15 @@ init_per_testcase(_, _Config) ->
     Ins = read_csv_instruction(Worker, Cwd ++ "/../../lib/kaa/test/files/csv.txt"),
     [{kaa_worker, Key}, {worker, Worker}, {ins, Ins}].
 
-end_per_testcase(_, _Config) ->
+end_per_testcase(_, Config) ->
     % @todo stop the worker
+    Key = proplists:get_value(kaa_worker, Config),
+    % this is to skip the stop link process for the worker stop test
+    ok = case syn:find_by_key(Key) of
+        undefined -> ok;
+        _Pid      ->
+          kaa_main_worker:stop_link(Key)
+    end,
     ok = application:stop(mnesia),
     ok = application:stop(compiler),
     ok = application:stop(syntax_tools),
@@ -78,6 +87,11 @@ end_per_testcase(_, _Config) ->
 test_kaa_worker([{kaa_worker, Key}, _, _]) ->
     Pid = syn:find_by_key(Key),
     ?assertEqual(is_pid(Pid), true).
+
+test_kaa_worker_stop([{kaa_worker, Key}, _, _]) ->
+    Pid = syn:find_by_key(Key),
+    ok = kaa_main_worker:stop_link(Key),
+    ?assertEqual(erlang:is_process_alive(Pid), false).
 
 test_kaa_get_worker([{kaa_worker, Key}, _, _]) ->
     {ok, Pb} = kaa_main_worker:get_worker(Key),
