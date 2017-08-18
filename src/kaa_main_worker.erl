@@ -8,7 +8,8 @@
 -export([start_link/0,
     get_worker/1,
     kaa_proto_in/2,
-    r_key/0]).
+    r_key/0,
+    stop_link/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -40,8 +41,11 @@ kaa_proto_in(Key, PBMsg) ->
     Pid = syn:find_by_key(Key),
     gen_server:call(Pid, {kaa_proto_in, PBMsg}, infinity).
 
+stop_link(Key) ->
+    Pid = syn:find_by_key(Key),
+    gen_server:call(Pid, stop_link).
+
 init([Key]) ->
-    process_flag(trap_exit, true),
     % start the py process and initializes its importing modules
     case jun_worker:start_link() of
         {ok, JunPid} ->
@@ -63,6 +67,9 @@ handle_call(get_worker, _From, State)            ->
 handle_call({kaa_proto_in, PBMsg}, _From, State) ->
     Result = kaa_proto:exec(PBMsg),    
     {reply, {ok, Result}, State};
+
+handle_call(stop_link, _From, State) ->
+    {stop, normal, ok, State};
  
 handle_call(_Request, _From, State) ->    
     {reply, ok, State}.
@@ -77,6 +84,10 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 terminate(_Reason, State) ->
+    % terminate the jun worker process
+    JunPid = State#state.jun_worker,
+    ok = jun_worker:stop_link(JunPid),
+    % also removes syn register
     Key = State#state.key,
     ok = syn:unregister(Key),
     ok.
