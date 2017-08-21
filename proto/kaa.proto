@@ -50,6 +50,7 @@ enum funs {
     len_index = 12;
     memory_usage = 13;
     info_columns = 14;
+    selection = 18;
 
     // Plotting
     plot = 17;
