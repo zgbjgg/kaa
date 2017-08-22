@@ -46,7 +46,10 @@ exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
     [{_, DataFrame}] = ets:lookup(?KAA_ENVIRONMENT(Pid), MemId),
     % parse keywords in order to convert to a plist for jun
     Keywords0 = lists:map(fun(#'Keywords'{key = Key, value = Value}) ->
-        {list_to_atom(Key), list_to_atom(Value)}
+        case catch list_to_integer(Value) of
+            {'EXIT', _} -> {list_to_atom(Key), list_to_atom(Value)};
+            ValueInt    -> {list_to_atom(Key), ValueInt}
+        end
     end, Keywords),
     % maybe dont use axis, this must be optional in proto
     case Axis of
