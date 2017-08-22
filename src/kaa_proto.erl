@@ -73,6 +73,12 @@ encode_result({ok, {?DATAFRAME, {'$erlport.opaque', python, _} = DataFrame}}) ->
     true = ets:insert(?KAA_ENVIRONMENT(Pid), {binary_to_list(MemId), DataFrame}),
     KaaResult = #'KaaResult'{ok = "ok", result = {dataframe, MemId}},
     kaa_result:encode_msg(KaaResult);
+encode_result({ok, {?GROUPBY, {'$erlport.opaque', python, _} = GroupBy}}) ->
+    MemId = random_key(),
+    Pid = pid_to_list(self()),
+    true = ets:insert(?KAA_ENVIRONMENT(Pid), {binary_to_list(MemId), GroupBy}),
+    KaaResult = #'KaaResult'{ok = "ok", result = {groupby, MemId}},
+    kaa_result:encode_msg(KaaResult);
 % the process of return plotting through pb is complex, since is an opaque term
 % similar to dataframe, so maybe store in an internal storage to execute tasks
 % in the plot after creation.
