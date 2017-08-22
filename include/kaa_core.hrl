@@ -3,3 +3,4 @@
 % classes from py
 -define(DATAFRAME, 'pandas.core.frame.DataFrame').
 -define(AXESPLOT, 'matplotlib.AxesSubplot').
+-define(GROUPBY, 'pandas.core.groupby.DataFrameGroupBy').
