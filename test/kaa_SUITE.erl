@@ -25,7 +25,8 @@
     test_kaa_proto_in_error/1,
     test_kaa_proto_plotting/1,
     test_kaa_proto_raw_plotting/1,
-    test_kaa_proto_selection/1]).
+    test_kaa_proto_selection/1,
+    test_kaa_proto_groupby/1]).
 
 all() ->
     [test_kaa_worker,
@@ -45,7 +46,8 @@ all() ->
      test_kaa_proto_in_error,
      test_kaa_proto_plotting,
      test_kaa_proto_raw_plotting,
-     test_kaa_proto_selection].
+     test_kaa_proto_selection,
+     test_kaa_proto_groupby].
 
 init_per_testcase(_, _Config) ->
     ok = application:start(mnesia),
@@ -189,6 +191,15 @@ test_kaa_proto_selection([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     {ok, PbOutSelection} = kaa_main_worker:kaa_proto_in(Key, SelectionIns),
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutSelection, 'KaaResult'),
     ?assertMatch({dataframe, _}, Result).
+
+test_kaa_proto_groupby([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
+    {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
+    #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
+    {dataframe, DataFrame} = R,
+    GroupByIns = common_instruction(Worker, DataFrame, groupby, "age", []),
+    {ok, PbOutGroupBy} = kaa_main_worker:kaa_proto_in(Key, GroupByIns),
+    #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutGroupBy, 'KaaResult'),
+    ?assertMatch({groupby, _}, Result).
 
 %% other errors directly to kaa_proto
 
