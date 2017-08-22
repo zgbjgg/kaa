@@ -7,6 +7,7 @@ message KaaResult {
         string dataframe = 4;
         string string = 5;
         string axesplot = 6;
+        string groupby = 7;
     }
 }
 
