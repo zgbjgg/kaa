@@ -26,7 +26,8 @@
     test_kaa_proto_plotting/1,
     test_kaa_proto_raw_plotting/1,
     test_kaa_proto_selection/1,
-    test_kaa_proto_groupby/1]).
+    test_kaa_proto_groupby/1,
+    test_kaa_proto_sort/1]).
 
 all() ->
     [test_kaa_worker,
@@ -47,7 +48,8 @@ all() ->
      test_kaa_proto_plotting,
      test_kaa_proto_raw_plotting,
      test_kaa_proto_selection,
-     test_kaa_proto_groupby].
+     test_kaa_proto_groupby,
+     test_kaa_proto_sort].
 
 init_per_testcase(_, _Config) ->
     ok = application:start(mnesia),
@@ -201,6 +203,16 @@ test_kaa_proto_groupby([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutGroupBy, 'KaaResult'),
     ?assertMatch({groupby, _}, Result).
 
+test_kaa_proto_sort([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
+    {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
+    #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
+    {dataframe, DataFrame} = R,
+    SortIns = common_instruction(Worker, DataFrame, sort_values, "None", [#'Keywords'{key = "by", value = "age"},
+        #'Keywords'{key = "ascending", value = "True"}]),
+    {ok, PbOutSort} = kaa_main_worker:kaa_proto_in(Key, SortIns),
+    #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutSort, 'KaaResult'),
+    ?assertMatch({dataframe, _}, Result).
+
 %% other errors directly to kaa_proto
 
 test_kaa_get_worker_non_pid([_, _, _]) ->
@@ -250,9 +262,10 @@ common_instruction(JunWorker, DataFrame, Fn, none, Keywords) ->
         arguments = {frame, #m_frame{dataframe = DataFrame,
             keywords = Keywords}}},
     kaa:encode_msg(Kaa);
-common_instruction(JunWorker, DataFrame, Fn, Axis, _) ->
+common_instruction(JunWorker, DataFrame, Fn, Axis, Keywords) ->
     Kaa = #'Kaa'{module = 'jun_pandas',
         'function' = Fn,
         jun_worker = JunWorker,
-        arguments = {frame, #m_frame{dataframe = DataFrame, axis = Axis}}},
+        arguments = {frame, #m_frame{dataframe = DataFrame, axis = Axis,
+            keywords = Keywords}}},
     kaa:encode_msg(Kaa).
