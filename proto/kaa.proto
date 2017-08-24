@@ -57,6 +57,9 @@ enum funs {
 
     // Function application, Groupby & Window
     groupby = 19;
+
+    // Reshaping, Sorting & Transposing
+    sort_values = 20;
 }
 
 // for keywords in some fun
