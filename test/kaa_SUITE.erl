@@ -27,7 +27,8 @@
     test_kaa_proto_raw_plotting/1,
     test_kaa_proto_selection/1,
     test_kaa_proto_groupby/1,
-    test_kaa_proto_sort/1]).
+    test_kaa_proto_sort/1,
+    test_kaa_proto_sort_index/1]).
 
 all() ->
     [test_kaa_worker,
@@ -49,7 +50,8 @@ all() ->
      test_kaa_proto_raw_plotting,
      test_kaa_proto_selection,
      test_kaa_proto_groupby,
-     test_kaa_proto_sort].
+     test_kaa_proto_sort,
+     test_kaa_proto_sort_index].
 
 init_per_testcase(_, _Config) ->
     ok = application:start(mnesia),
@@ -209,6 +211,15 @@ test_kaa_proto_sort([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     {dataframe, DataFrame} = R,
     SortIns = common_instruction(Worker, DataFrame, sort_values, "None", [#'Keywords'{key = "by", value = "age"},
         #'Keywords'{key = "ascending", value = "True"}]),
+    {ok, PbOutSort} = kaa_main_worker:kaa_proto_in(Key, SortIns),
+    #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutSort, 'KaaResult'),
+    ?assertMatch({dataframe, _}, Result).
+
+test_kaa_proto_sort_index([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
+    {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
+    #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
+    {dataframe, DataFrame} = R,
+    SortIns = common_instruction(Worker, DataFrame, sort_index, "None", [#'Keywords'{key = "ascending", value = "True"}]),
     {ok, PbOutSort} = kaa_main_worker:kaa_proto_in(Key, SortIns),
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutSort, 'KaaResult'),
     ?assertMatch({dataframe, _}, Result).
