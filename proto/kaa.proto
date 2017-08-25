@@ -60,6 +60,7 @@ enum funs {
 
     // Reshaping, Sorting & Transposing
     sort_values = 20;
+    sort_index = 21;
 }
 
 // for keywords in some fun
