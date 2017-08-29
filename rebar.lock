@@ -10,7 +10,7 @@
   0},
  {<<"jun">>,
   {git,"https://github.com/zgbjgg/jun",
-       {ref,"2209cbf4f957053713db0aa87fe0cc76fe2affe4"}},
+       {ref,"58057d0f746c709c1f2d48858f83e51519a212eb"}},
   0},
  {<<"lager">>,
   {git,"https://github.com/erlang-lager/lager",
