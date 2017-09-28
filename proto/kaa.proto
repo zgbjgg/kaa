@@ -22,6 +22,7 @@ message m_frame {
 // mods is an enum for erlang module, this case default is `jun_pandas`
 enum mods {
     jun_pandas = 0;
+    jun_plotly = 1;
 }
 
 // funs is an enum for erlang functions inside mods
@@ -62,6 +63,9 @@ enum funs {
     // Reshaping, Sorting & Transposing
     sort_values = 20;
     sort_index = 21;
+
+    // Plotly Support
+    iplot = 23;
 }
 
 // for keywords in some fun
