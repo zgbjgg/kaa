@@ -28,7 +28,8 @@
     test_kaa_proto_selection/1,
     test_kaa_proto_groupby/1,
     test_kaa_proto_sort/1,
-    test_kaa_proto_sort_index/1]).
+    test_kaa_proto_sort_index/1,
+    test_kaa_proto_iplot/1]).
 
 all() ->
     [test_kaa_worker,
@@ -51,7 +52,8 @@ all() ->
      test_kaa_proto_selection,
      test_kaa_proto_groupby,
      test_kaa_proto_sort,
-     test_kaa_proto_sort_index].
+     test_kaa_proto_sort_index,
+     test_kaa_proto_iplot].
 
 init_per_testcase(_, _Config) ->
     ok = application:start(mnesia),
@@ -224,6 +226,17 @@ test_kaa_proto_sort_index([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutSort, 'KaaResult'),
     ?assertMatch({dataframe, _}, Result).
 
+test_kaa_proto_iplot([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
+    {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
+    #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
+    {dataframe, DataFrame} = R,
+    PlotIns = common_instruction(Worker, DataFrame, iplot, "None", [#'Keywords'{key = "x", value = "name"},
+        #'Keywords'{key = "y", value = "age"},
+        #'Keywords'{key = "kind", value = "bar"}]),
+    {ok, PbOutPlot} = kaa_main_worker:kaa_proto_in(Key, PlotIns),
+    #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutPlot, 'KaaResult'),
+    ?assertMatch({string, _}, Result).
+
 %% other errors directly to kaa_proto
 
 test_kaa_get_worker_non_pid([_, _, _]) ->
@@ -266,6 +279,13 @@ read_csv_instruction(JunWorker, PathToCsv) ->
         arguments = {path, PathToCsv}},
     kaa:encode_msg(Kaa).
 
+common_instruction(JunWorker, DataFrame, iplot, Axis, Keywords) ->
+    Kaa = #'Kaa'{module = 'jun_plotly',
+        'function' = iplot,
+        jun_worker = JunWorker,
+        arguments = {frame, #m_frame{dataframe = DataFrame, axis = Axis,
+            keywords = Keywords}}},
+    kaa:encode_msg(Kaa);
 common_instruction(JunWorker, DataFrame, Fn, none, Keywords) ->
     Kaa = #'Kaa'{module = 'jun_pandas',
         'function' = Fn,
