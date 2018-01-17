@@ -4,3 +4,4 @@
 -define(DATAFRAME, 'pandas.core.frame.DataFrame').
 -define(AXESPLOT, 'matplotlib.AxesSubplot').
 -define(GROUPBY, 'pandas.core.groupby.DataFrameGroupBy').
+-define(SEABORNPLOT, 'seaborn.axisgrid.*').
