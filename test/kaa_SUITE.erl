@@ -29,7 +29,8 @@
     test_kaa_proto_groupby/1,
     test_kaa_proto_sort/1,
     test_kaa_proto_sort_index/1,
-    test_kaa_proto_iplot/1]).
+    test_kaa_proto_iplot/1,
+    test_kaa_proto_seaborn/1]).
 
 all() ->
     [test_kaa_worker,
@@ -53,9 +54,10 @@ all() ->
      test_kaa_proto_groupby,
      test_kaa_proto_sort,
      test_kaa_proto_sort_index,
-     test_kaa_proto_iplot].
+     test_kaa_proto_iplot,
+     test_kaa_proto_seaborn].
 
-init_per_testcase(_, _Config) ->
+init_per_testcase(Testcase, _Config) ->
     ok = application:start(mnesia),
     ok = application:start(compiler),
     ok = application:start(syntax_tools),
@@ -71,7 +73,11 @@ init_per_testcase(_, _Config) ->
     #'KaaWorker'{jun_worker = Worker} = kaa_worker:decode_msg(Pb, 'KaaWorker'),
     {ok, Cwd} = file:get_cwd(),
     % use the helper read_csv_instruction from kaa_proto
-    Ins = read_csv_instruction(Worker, Cwd ++ "/../../lib/kaa/test/files/csv.txt"),
+    Path = case Testcase of
+        test_kaa_proto_seaborn -> "/../../lib/kaa/test/files/csv2.txt";
+        _                      -> "/../../lib/kaa/test/files/csv.txt"
+    end,
+    Ins = read_csv_instruction(Worker, Cwd ++ Path),
     [{kaa_worker, Key}, {worker, Worker}, {ins, Ins}].
 
 end_per_testcase(_, Config) ->
@@ -237,6 +243,20 @@ test_kaa_proto_iplot([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutPlot, 'KaaResult'),
     ?assertMatch({string, _}, Result).
 
+%% @TODO: maybe more tests for seaborn?
+
+test_kaa_proto_seaborn([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
+    {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
+    #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
+    {dataframe, DataFrame} = R,
+    LmplotIns = common_instruction(Worker, DataFrame, seaborn, lmplot,
+        "fig.png", [#'Keywords'{key = "x", value = "month"},
+            #'Keywords'{key = "y", value = "users"},
+            #'Keywords'{key = "hue", value = "smoker"}]),
+    {ok, PbOutPlot} = kaa_main_worker:kaa_proto_in(Key, LmplotIns),
+    #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutPlot, 'KaaResult'),
+    ?assertMatch({string, _}, Result).
+
 %% other errors directly to kaa_proto
 
 test_kaa_get_worker_non_pid([_, _, _]) ->
@@ -277,6 +297,14 @@ read_csv_instruction(JunWorker, PathToCsv) ->
         'function' = 'read_csv',
         jun_worker = JunWorker,
         arguments = {path, PathToCsv}},
+    kaa:encode_msg(Kaa).
+
+common_instruction(JunWorker, DataFrame, seaborn, Fn, Axis, Keywords) ->
+    Kaa = #'Kaa'{module = 'jun_seaborn',
+        'function' = Fn,
+        jun_worker = JunWorker,
+        arguments = {frame, #m_frame{dataframe = DataFrame, axis = Axis,
+            keywords = Keywords}}},
     kaa:encode_msg(Kaa).
 
 common_instruction(JunWorker, DataFrame, iplot, Axis, Keywords) ->
