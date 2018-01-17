@@ -8,6 +8,6 @@ message KaaResult {
         string string = 5;
         string axesplot = 6;
         string groupby = 7;
+        string seabornplot = 8;  
     }
 }
-

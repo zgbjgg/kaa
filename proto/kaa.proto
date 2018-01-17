@@ -23,6 +23,7 @@ message m_frame {
 enum mods {
     jun_pandas = 0;
     jun_plotly = 1;
+    jun_seaborn = 2;
 }
 
 // funs is an enum for erlang functions inside mods
@@ -66,6 +67,12 @@ enum funs {
 
     // Plotly Support
     iplot = 23;
+
+    // Seaborn Support
+    lmplot = 24;
+    factorplot = 25;
+    pairplot = 26;
+    jointplot = 27;
 }
 
 // for keywords in some fun
