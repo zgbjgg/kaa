@@ -73,6 +73,14 @@ enum funs {
     factorplot = 25;
     pairplot = 26;
     jointplot = 27;
+    stripplot = 28;
+    swarmplot = 29;
+    boxplot = 30;
+    violinplot = 31;
+    lvplot = 32;
+    pointplot = 33;
+    barplot = 34;
+    countplot = 35;
 }
 
 // for keywords in some fun
