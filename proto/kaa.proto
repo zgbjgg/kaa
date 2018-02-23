@@ -60,6 +60,7 @@ enum funs {
 
     // Function application, Groupby & Window
     groupby = 19;
+    apply = 36;
 
     // Reshaping, Sorting & Transposing
     sort_values = 20;
