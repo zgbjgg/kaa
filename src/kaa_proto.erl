@@ -67,6 +67,12 @@ exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
 
 %% @hidden
 
+encode_result({ok, {?SERIES, {'$erlport.opaque', python, _} = Series}})       ->
+    MemId = random_key(),
+    Pid = pid_to_list(self()),
+    true = ets:insert(?KAA_ENVIRONMENT(Pid), {binary_to_list(MemId), Series}),
+    KaaResult = #'KaaResult'{ok = "ok", result = {series, MemId}},
+    kaa_result:encode_msg(KaaResult);
 encode_result({ok, {?DATAFRAME, {'$erlport.opaque', python, _} = DataFrame}}) ->
     MemId = random_key(),
     Pid = pid_to_list(self()),
