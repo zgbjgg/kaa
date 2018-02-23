@@ -30,7 +30,8 @@
     test_kaa_proto_sort/1,
     test_kaa_proto_sort_index/1,
     test_kaa_proto_iplot/1,
-    test_kaa_proto_seaborn/1]).
+    test_kaa_proto_seaborn/1,
+    test_kaa_proto_in_series/1]).
 
 all() ->
     [test_kaa_worker,
@@ -55,7 +56,8 @@ all() ->
      test_kaa_proto_sort,
      test_kaa_proto_sort_index,
      test_kaa_proto_iplot,
-     test_kaa_proto_seaborn].
+     test_kaa_proto_seaborn,
+     test_kaa_proto_in_series].
 
 init_per_testcase(Testcase, _Config) ->
     ok = application:start(mnesia),
@@ -242,6 +244,16 @@ test_kaa_proto_iplot([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     {ok, PbOutPlot} = kaa_main_worker:kaa_proto_in(Key, PlotIns),
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutPlot, 'KaaResult'),
     ?assertMatch({string, _}, Result).
+
+test_kaa_proto_in_series([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
+    {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
+    #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
+    {dataframe, DataFrame} = R,
+    ApplyIns = common_instruction(Worker, DataFrame, apply, "None", [#'Keywords'{key = "axis", value = "1"},
+        #'Keywords'{key = "lambda", value = "lambda row : row['age'] + 7"}]),
+    {ok, PbOutApply} = kaa_main_worker:kaa_proto_in(Key, ApplyIns),
+    #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutApply, 'KaaResult'),
+    ?assertMatch({series, _}, Result).
 
 %% @TODO: maybe more tests for seaborn?
 
