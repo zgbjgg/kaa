@@ -45,7 +45,6 @@ enum funs {
     query = 6;
     head = 15;
     tail = 16;
-    legacy_query = 22;
 
     // Helpers
     columns = 10;
@@ -82,6 +81,10 @@ enum funs {
     pointplot = 33;
     barplot = 34;
     countplot = 35;
+
+    // Legacy
+    legacy_query = 22;
+    legacy_assignment = 37;
 }
 
 // for keywords in some fun
