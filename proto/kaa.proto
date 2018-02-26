@@ -85,6 +85,10 @@ enum funs {
     // Legacy
     legacy_query = 22;
     legacy_assignment = 37;
+
+    // Reindexing, Selection, Label manipulation
+    drop = 38;
+
 }
 
 // for keywords in some fun
