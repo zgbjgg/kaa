@@ -60,7 +60,12 @@ exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
             % argument of a function, for example, head or tail.
             % a function could receive a float value?, if so, then parse.
             case catch list_to_integer(Axis) of
-                {'EXIT', _} -> Mod:Fn(JunWorker, DataFrame, list_to_atom(Axis), Keywords0);
+                {'EXIT', _} ->
+                    % if the axis is a series then check if we hold into kaa environment
+                    case ets:lookup(?KAA_ENVIRONMENT(Pid), Axis) of
+                        [{_, Series}] -> Mod:Fn(JunWorker, DataFrame, Axis, Keywords0);
+                        _             -> Mod:Fn(JunWorker, DataFrame, list_to_atom(Axis), Keywords0)
+                    end;
                 AxisInt     -> Mod:Fn(JunWorker, DataFrame, AxisInt, Keywords0)
             end
     end.
