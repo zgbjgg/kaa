@@ -63,7 +63,7 @@ exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
                 {'EXIT', _} ->
                     % if the axis is a series then check if we hold into kaa environment
                     case ets:lookup(?KAA_ENVIRONMENT(Pid), Axis) of
-                        [{_, Series}] -> Mod:Fn(JunWorker, DataFrame, Axis, Keywords0);
+                        [{_, Series}] -> Mod:Fn(JunWorker, DataFrame, Series, Keywords0);
                         _             -> Mod:Fn(JunWorker, DataFrame, list_to_atom(Axis), Keywords0)
                     end;
                 AxisInt     -> Mod:Fn(JunWorker, DataFrame, AxisInt, Keywords0)
