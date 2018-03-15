@@ -1,6 +1,6 @@
 {application, kaa,
- [{description, "An OTP application"},
-  {vsn, "0.1.0"},
+ [{description, "support to execute jun tasks using protocol buffers"},
+  {vsn, "0.1.5"},
   {registered, []},
   {mod, { kaa_app, []}},
   {applications,
