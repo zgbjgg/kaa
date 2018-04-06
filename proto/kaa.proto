@@ -24,6 +24,7 @@ enum mods {
     jun_pandas = 0;
     jun_plotly = 1;
     jun_seaborn = 2;
+    jun_pandas_series = 3;
 }
 
 // funs is an enum for erlang functions inside mods
@@ -89,6 +90,8 @@ enum funs {
     // Reindexing, Selection, Label manipulation
     drop = 38;
 
+    // Binary operations functions
+    combine = 39;
 }
 
 // for keywords in some fun
