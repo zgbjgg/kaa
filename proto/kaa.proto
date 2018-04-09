@@ -41,6 +41,7 @@ enum funs {
     min = 3;
     count = 4;
     median = 5;
+    unique = 40;
 
     // Indexing, iteration
     query = 6;
