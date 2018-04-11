@@ -1,26 +1,16 @@
 {"1.1.0",
-[{<<"erlport">>,
-  {git,"https://github.com/hdima/erlport",
-       {ref,"246b7722d62b87b48be66d9a871509a537728962"}},
-  1},
+[{<<"erlport">>,{pkg,<<"erlport">>,<<"0.9.8">>},1},
  {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.9">>},1},
- {<<"gpb">>,
-  {git,"https://github.com/tomas-abrahamsson/gpb",
-       {ref,"84bf8537be97ae08f9a2c46ec257e5bf745c939a"}},
-  0},
- {<<"jun">>,
-  {git,"https://github.com/zgbjgg/jun",
-       {ref,"857c459e9c255e49c24b1e255599ff6708fab104"}},
-  0},
- {<<"lager">>,
-  {git,"https://github.com/erlang-lager/lager",
-       {ref,"c3970a99131c7c73de7eba3c2a569806fe47e40a"}},
-  0},
- {<<"syn">>,
-  {git,"https://github.com/ostinelli/syn",
-       {ref,"43701a66391261db35d9f6f3e52eca2523476002"}},
-  0}]}.
+ {<<"gpb">>,{pkg,<<"gpb">>,<<"4.1.3">>},0},
+ {<<"jun">>,{pkg,<<"jun">>,<<"0.1.5">>},0},
+ {<<"lager">>,{pkg,<<"lager">>,<<"3.6.1">>},0},
+ {<<"syn">>,{pkg,<<"syn">>,<<"1.6.3">>},0}]}.
 [
 {pkg_hash,[
- {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>}]}
+ {<<"erlport">>, <<"B7DC57EB87F215A671926BFBCD23E6E9C76F8653B0D072627B41431EF51C4D20">>},
+ {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>},
+ {<<"gpb">>, <<"FE63F312AE95CE8F1D307E04DF3C6B49A504F5C7D0A84221B02A819FEDA63BBE">>},
+ {<<"jun">>, <<"704E181ECAA9ADBC99C9C4BBCBF2472968AE63FC011746C218D3B1C81D7A9669">>},
+ {<<"lager">>, <<"9D29C5FF7F926D25ECD9899990867C9152DCF34EEE65BAC8EC0DFC0D16A26E0C">>},
+ {<<"syn">>, <<"E3400A6286A7C44ED0A0293D0E83A1F44AA9B1A9EC2C8D54EEE2CD1F4FF2F94E">>}]}
 ].
