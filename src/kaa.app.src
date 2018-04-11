@@ -12,8 +12,7 @@
    ]},
   {env,[]},
   {modules, []},
-
-  {maintainers, []},
-  {licenses, []},
-  {links, []}
+  {maintainers, ["Jorge Garrido"]},
+  {licenses, ["MIT"]},
+  {links, [{"Github", "https://github.com/zgbjgg/kaa"}]}
  ]}.
