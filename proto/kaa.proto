@@ -90,6 +90,7 @@ enum funs {
 
     // Reindexing, Selection, Label manipulation
     drop = 38;
+    rename = 41;
 
     // Binary operations functions
     combine = 39;
