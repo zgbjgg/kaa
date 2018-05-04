@@ -38,19 +38,17 @@ exec(PBMsg) when is_binary(PBMsg)     ->
 
 %% @hidden
 
-exec_jun({path, Path}, JunWorker, Mod, Fn) ->
-    Mod:Fn(JunWorker, list_to_atom(Path));
+exec_jun({core, #m_core{argument = Argument, keywords = Keywords}},
+        JunWorker, Mod, Fn) ->
+    % parse keywords in order to convert to a plist for jun
+    Keywords0 = parse_keywords(Keywords),
+    Mod:Fn(JunWorker, list_to_atom(Argument), Keywords0);
 exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
         JunWorker, Mod, Fn) ->
     Pid = pid_to_list(self()),
     [{_, DataFrame}] = ets:lookup(?KAA_ENVIRONMENT(Pid), MemId),
     % parse keywords in order to convert to a plist for jun
-    Keywords0 = lists:map(fun(#'Keywords'{key = Key, value = Value}) ->
-        case catch list_to_integer(Value) of
-            {'EXIT', _} -> {list_to_atom(Key), list_to_atom(Value)};
-            ValueInt    -> {list_to_atom(Key), ValueInt}
-        end
-    end, Keywords),
+    Keywords0 = parse_keywords(Keywords),
     % maybe dont use axis, this must be optional in proto
     case Axis of
         undefined ->
@@ -128,3 +126,13 @@ random_key() ->
         [ lists:nth(rand:uniform(L), Chars) | Acc]
     end, [], Seq),
     list_to_binary(R).
+
+%% @hidden
+
+parse_keywords(Keywords) ->
+    lists:map(fun(#'Keywords'{key = Key, value = Value}) ->
+        case catch list_to_integer(Value) of
+            {'EXIT', _} -> {list_to_atom(Key), list_to_atom(Value)};
+            ValueInt    -> {list_to_atom(Key), ValueInt}
+        end
+    end, Keywords).
