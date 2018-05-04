@@ -5,7 +5,7 @@ message Kaa {
     required funs function = 2;
     required string jun_worker = 3;
     oneof arguments {
-        string path = 4; // for now if no manipulation, then load!
+        m_core core = 4; // for now if no manipulation, then load!
         m_frame frame = 5;
     }
 }
@@ -17,6 +17,13 @@ message m_frame {
     required string dataframe = 1;
     optional string axis = 2;
     repeated Keywords keywords = 3;
+}
+
+// m_core represents the arguments for functions
+// used directly from pandas
+message m_core {
+    required string argument = 1;
+    repeated Keywords keywords = 2;
 }
 
 // mods is an enum for erlang module, this case default is `jun_pandas`
