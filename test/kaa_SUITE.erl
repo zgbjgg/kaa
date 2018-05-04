@@ -323,7 +323,7 @@ read_csv_instruction(JunWorker, PathToCsv) ->
     Kaa = #'Kaa'{module = 'jun_pandas',
         'function' = 'read_csv',
         jun_worker = JunWorker,
-        arguments = {path, PathToCsv}},
+        arguments = {core, #m_core{argument = PathToCsv, keywords = []}}},
     kaa:encode_msg(Kaa).
 
 common_instruction(JunWorker, DataFrame, seaborn, Fn, Axis, Keywords) ->
