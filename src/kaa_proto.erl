@@ -40,9 +40,12 @@ exec(PBMsg) when is_binary(PBMsg)     ->
 
 exec_jun({core, #m_core{argument = Argument, keywords = Keywords}},
         JunWorker, Mod, Fn) ->
+    Pid = pid_to_list(self()),
     % parse keywords in order to convert to a plist for jun
     Keywords0 = parse_keywords(Keywords),
-    Mod:Fn(JunWorker, list_to_atom(Argument), Keywords0);
+    % maybe argument use a series, check for it in kaa environment
+    Argument0 = parse_argument(Argument, Pid),
+    Mod:Fn(JunWorker, Argument0, Keywords0);
 exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
         JunWorker, Mod, Fn) ->
     Pid = pid_to_list(self()),
@@ -57,15 +60,8 @@ exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
             % this rare condition happens when jun tries to use a integer value as
             % argument of a function, for example, head or tail.
             % a function could receive a float value?, if so, then parse.
-            case catch list_to_integer(Axis) of
-                {'EXIT', _} ->
-                    % if the axis is a series then check if we hold into kaa environment
-                    case ets:lookup(?KAA_ENVIRONMENT(Pid), Axis) of
-                        [{_, Series}] -> Mod:Fn(JunWorker, DataFrame, Series, Keywords0);
-                        _             -> Mod:Fn(JunWorker, DataFrame, list_to_atom(Axis), Keywords0)
-                    end;
-                AxisInt     -> Mod:Fn(JunWorker, DataFrame, AxisInt, Keywords0)
-            end
+            Axis0 = parse_argument(Axis, Pid),
+            Mod:Fn(JunWorker, DataFrame, Axis0, Keywords0)
     end.
 
 %% @hidden
@@ -136,3 +132,16 @@ parse_keywords(Keywords) ->
             ValueInt    -> {list_to_atom(Key), ValueInt}
         end
     end, Keywords).
+
+%% @hidden
+
+parse_argument(Argument, Pid) ->
+    case catch list_to_integer(Argument) of
+        {'EXIT', _} ->
+            % if the argument is a series then check if we hold into kaa environment
+            case ets:lookup(?KAA_ENVIRONMENT(Pid), Argument) of
+                [{_, Series}] -> Series;
+                _             -> list_to_atom(Argument)
+            end;
+        ArgumentInt -> ArgumentInt
+    end.
