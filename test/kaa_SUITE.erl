@@ -32,7 +32,8 @@
     test_kaa_proto_iplot/1,
     test_kaa_proto_seaborn/1,
     test_kaa_proto_in_series/1,
-    test_kaa_proto_legacy_assignment/1]).
+    test_kaa_proto_legacy_assignment/1,
+    test_kaa_proto_to_datetime/1]).
 
 all() ->
     [test_kaa_worker,
@@ -59,7 +60,8 @@ all() ->
      test_kaa_proto_iplot,
      test_kaa_proto_seaborn,
      test_kaa_proto_in_series,
-     test_kaa_proto_legacy_assignment].
+     test_kaa_proto_legacy_assignment,
+     test_kaa_proto_to_datetime].
 
 init_per_testcase(Testcase, _Config) ->
     ok = application:start(mnesia),
@@ -270,6 +272,18 @@ test_kaa_proto_legacy_assignment([{kaa_worker, Key}, {worker, Worker}, {ins, Ins
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutLegacyAssignment, 'KaaResult'),
     ?assertMatch({dataframe, _}, Result).
 
+test_kaa_proto_to_datetime([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
+    {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
+    #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
+    {dataframe, DataFrame} = R,
+    SelectionIns = common_instruction(Worker, DataFrame, single_selection, "age", []),
+    {ok, PbOutSelection} = kaa_main_worker:kaa_proto_in(Key, SelectionIns),
+    #'KaaResult'{ok = "ok",result = {series, Series}} = kaa_result:decode_msg(PbOutSelection, 'KaaResult'),
+    ToDateTimeIns =  core_instruction(Worker, to_datetime, Series, []),
+    {ok, PbOutToDateTime} = kaa_main_worker:kaa_proto_in(Key, ToDateTimeIns),
+    #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutToDateTime, 'KaaResult'),
+    ?assertMatch({series, _}, Result).
+
 %% @TODO: maybe more tests for seaborn?
 
 test_kaa_proto_seaborn([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
@@ -324,6 +338,13 @@ read_csv_instruction(JunWorker, PathToCsv) ->
         'function' = 'read_csv',
         jun_worker = JunWorker,
         arguments = {core, #m_core{argument = PathToCsv, keywords = []}}},
+    kaa:encode_msg(Kaa).
+
+core_instruction(JunWorker, Fn, Argument, Keywords) ->
+    Kaa = #'Kaa'{module = 'jun_pandas',
+        'function' = Fn,
+         jun_worker = JunWorker,
+         arguments = {core, #m_core{argument = Argument, keywords = Keywords}}},
     kaa:encode_msg(Kaa).
 
 common_instruction(JunWorker, DataFrame, seaborn, Fn, Axis, Keywords) ->
