@@ -32,6 +32,7 @@ enum mods {
     jun_plotly = 1;
     jun_seaborn = 2;
     jun_pandas_series = 3;
+    jun_pandas_timedelta = 4;
 }
 
 // funs is an enum for erlang functions inside mods
@@ -103,6 +104,9 @@ enum funs {
 
     // Binary operations functions
     combine = 39;
+
+    // Timedelta
+    days = 44;
 }
 
 // for keywords in some fun
