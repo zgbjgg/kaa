@@ -242,9 +242,10 @@ test_kaa_proto_iplot([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
     #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
     {dataframe, DataFrame} = R,
-    PlotIns = common_instruction(Worker, DataFrame, iplot, "None", [#'Keywords'{key = "x", value = "name"},
+    PlotIns = common_instruction(Worker, DataFrame, iplot, "key001", [#'Keywords'{key = "x", value = "name"},
         #'Keywords'{key = "y", value = "age"},
-        #'Keywords'{key = "kind", value = "bar"}]),
+        #'Keywords'{key = "kind", value = "bar"},
+        #'Keywords'{key = "asFigure", value = "True"}]),
     {ok, PbOutPlot} = kaa_main_worker:kaa_proto_in(Key, PlotIns),
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutPlot, 'KaaResult'),
     ?assertMatch({string, _}, Result).
