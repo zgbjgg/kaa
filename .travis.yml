@@ -9,7 +9,6 @@ install:
   - sudo pip install scipy
   - sudo pip install plotly==2.7.0
   - sudo pip install cufflinks==0.12.0
-  - sudo pip install cufflinks --upgrade
   - sudo pip install seaborn
   - sudo pip install --upgrade IPython
   - sudo pip install codecov
