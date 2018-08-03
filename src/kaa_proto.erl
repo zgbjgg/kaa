@@ -95,6 +95,8 @@ encode_result({ok, {?SEABORNPLOT, {'$erlport.opaque', python, _} = Plot}}) ->
     PlotBin = term_to_binary(Plot),
     KaaResult = #'KaaResult'{ok = "ok", result = {seabornplot, binary_to_list(PlotBin)}},
     kaa_result:encode_msg(KaaResult);
+encode_result({ok, {?PLOTLY, A}})                               ->
+    encode_result({ok, atom_to_list(A)}); % go to string
 encode_result({ok, I}) when is_integer(I)                       ->
     KaaResult = #'KaaResult'{ok = "ok", result = {inumber, I}},
     kaa_result:encode_msg(KaaResult);
