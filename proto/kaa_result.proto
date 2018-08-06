@@ -10,5 +10,6 @@ message KaaResult {
         string groupby = 7;
         string seabornplot = 8;
         string series = 9;
+        string iplot = 10;
     }
 }
