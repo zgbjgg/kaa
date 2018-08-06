@@ -49,7 +49,11 @@ exec_jun({core, #m_core{argument = Argument, keywords = Keywords}},
 exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
         JunWorker, Mod, Fn) ->
     Pid = pid_to_list(self()),
-    [{_, DataFrame}] = ets:lookup(?KAA_ENVIRONMENT(Pid), MemId),
+    % lookup for a dataframe if is in mem, otherwise use original
+    [{_, DataFrame}] = case ets:lookup(?KAA_ENVIRONMENT(Pid), MemId) of
+      []    -> [{exclude, MemId}];
+      Found -> Found
+    end,
     % parse keywords in order to convert to a plist for jun
     Keywords0 = parse_keywords(Keywords),
     % maybe dont use axis, this must be optional in proto
