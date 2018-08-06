@@ -30,6 +30,7 @@
     test_kaa_proto_sort/1,
     test_kaa_proto_sort_index/1,
     test_kaa_proto_iplot/1,
+    test_kaa_proto_pplot/1,
     test_kaa_proto_seaborn/1,
     test_kaa_proto_in_series/1,
     test_kaa_proto_legacy_assignment/1,
@@ -58,6 +59,7 @@ all() ->
      test_kaa_proto_sort,
      test_kaa_proto_sort_index,
      test_kaa_proto_iplot,
+     test_kaa_proto_pplot,
      test_kaa_proto_seaborn,
      test_kaa_proto_in_series,
      test_kaa_proto_legacy_assignment,
@@ -250,6 +252,21 @@ test_kaa_proto_iplot([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutPlot, 'KaaResult'),
     ?assertMatch({iplot, _}, Result).
 
+test_kaa_proto_pplot([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
+    {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
+    #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
+    {dataframe, DataFrame} = R,
+    PlotIns = common_instruction(Worker, DataFrame, iplot, "key001", [#'Keywords'{key = "x", value = "name"},
+        #'Keywords'{key = "y", value = "age"},
+        #'Keywords'{key = "kind", value = "bar"},
+        #'Keywords'{key = "asFigure", value = "True"}]),
+    {ok, PbOutPlot} = kaa_main_worker:kaa_proto_in(Key, PlotIns),
+    #'KaaResult'{ok = "ok", result = {iplot, "key001"}} = kaa_result:decode_msg(PbOutPlot, 'KaaResult'),
+    PlotIns1 = common_instruction(Worker, "key001", pplot, "pplot", []),
+    {ok, PbOutPlot1} = kaa_main_worker:kaa_proto_in(Key, PlotIns1),
+    #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutPlot1, 'KaaResult'),
+    ?assertMatch({string, _}, Result).
+
 test_kaa_proto_in_series([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
     #'KaaResult'{ok = "ok", result = R} = kaa_result:decode_msg(PbOut, 'KaaResult'),
@@ -356,6 +373,13 @@ common_instruction(JunWorker, DataFrame, seaborn, Fn, Axis, Keywords) ->
             keywords = Keywords}}},
     kaa:encode_msg(Kaa).
 
+common_instruction(JunWorker, Key, pplot, Axis, Keywords)      ->
+    Kaa = #'Kaa'{module = 'jun_plotly',
+       'function' = plot,
+       jun_worker = JunWorker,
+       arguments = {frame, #m_frame{dataframe = Key, axis = Axis,
+           keywords = Keywords}}},
+    kaa:encode_msg(Kaa);
 common_instruction(JunWorker, DataFrame, iplot, Axis, Keywords) ->
     Kaa = #'Kaa'{module = 'jun_plotly',
         'function' = iplot,
