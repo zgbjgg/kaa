@@ -51,7 +51,7 @@ exec_jun({frame, #m_frame{dataframe = MemId, axis = Axis, keywords = Keywords}},
     Pid = pid_to_list(self()),
     % lookup for a dataframe if is in mem, otherwise use original
     [{_, DataFrame}] = case ets:lookup(?KAA_ENVIRONMENT(Pid), MemId) of
-      []    -> [{exclude, MemId}];
+      []    -> [{exclude, parse_argument(MemId, Pid)}];
       Found -> Found
     end,
     % parse keywords in order to convert to a plist for jun
