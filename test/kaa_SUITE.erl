@@ -248,7 +248,7 @@ test_kaa_proto_iplot([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
         #'Keywords'{key = "asFigure", value = "True"}]),
     {ok, PbOutPlot} = kaa_main_worker:kaa_proto_in(Key, PlotIns),
     #'KaaResult'{ok = "ok", result = Result} = kaa_result:decode_msg(PbOutPlot, 'KaaResult'),
-    ?assertMatch({string, _}, Result).
+    ?assertMatch({iplot, _}, Result).
 
 test_kaa_proto_in_series([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
