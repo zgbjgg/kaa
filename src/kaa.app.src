@@ -1,6 +1,6 @@
 {application, kaa,
  [{description, "support to execute jun tasks using protocol buffers"},
-  {vsn, "0.2.9"},
+  {vsn, "0.2.10"},
   {registered, []},
   {mod, { kaa_app, []}},
   {applications,
