@@ -81,6 +81,7 @@ enum funs {
     // Plotly Support
     iplot = 23;
     extend = 47;
+    get_figure = 48;
 
     // Seaborn Support
     lmplot = 24;
