@@ -115,5 +115,17 @@ enum funs {
 // for keywords in some fun
 message Keywords {
     required string key = 1;
-    required string value = 2;
+    oneof value {
+        string svalue = 2;
+        int64 ivalue = 3;
+        double dvalue = 4;
+        KeywordValue avalue = 5;
+    }
+}
+
+// for keywords value, since can be a single string, number or even an array
+message KeywordValue {
+    repeated string svalue = 1;
+    repeated int64 ivalue = 2;
+    repeated double dvalue = 3;
 }
