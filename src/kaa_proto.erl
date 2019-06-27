@@ -135,9 +135,16 @@ random_key() ->
 
 parse_keywords(Keywords) ->
     lists:map(fun(#'Keywords'{key = Key, value = Value}) ->
-        case catch list_to_integer(Value) of
-            {'EXIT', _} -> {list_to_atom(Key), list_to_atom(Value)};
-            ValueInt    -> {list_to_atom(Key), ValueInt}
+        case Value of
+            {svalue, ValueStr} -> {list_to_atom(Key), list_to_atom(ValueStr)};
+            {ivalue, ValueInt} -> {list_to_atom(Key), ValueInt};
+            {dvalue, ValueDou} -> {list_to_atom(Key), ValueDou};
+            {avalue, {'KeywordValue', ArrStr, [], []}} ->
+                {list_to_atom(Key), normalize_array(ArrStr)};
+            {avalue, {'KeywordValue', [], ArrInt, []}} ->
+                {list_to_atom(Key), normalize_array(ArrInt)};
+            {avalue, {'KeywordValue', [], [], ArrDou}} ->
+                {list_to_atom(Key), normalize_array(ArrDou)}
         end
     end, Keywords).
 
@@ -153,3 +160,14 @@ parse_argument(Argument, Pid) ->
             end;
         ArgumentInt -> ArgumentInt
     end.
+
+
+%% @hidden
+
+normalize_array([]) -> [];
+normalize_array([ V | Array]) when is_list(V) ->
+    [ list_to_atom(V) | normalize_array(Array) ];
+normalize_array([ V | Array]) when is_integer(V) ->
+    [ V | normalize_array(Array) ];
+normalize_array([ V | Array]) when is_float(V) ->
+    [ V | normalize_array(Array) ].
