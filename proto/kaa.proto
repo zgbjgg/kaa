@@ -44,6 +44,7 @@ enum funs {
     to_json = 9;
     to_datetime = 43;
     read_sql = 45;
+    read_string = 47;
 
     // Computations / Descriptive Stats
     sum = 1;
@@ -104,6 +105,7 @@ enum funs {
     // Reindexing, Selection, Label manipulation
     drop = 38;
     rename = 41;
+    append = 46;
 
     // Binary operations functions
     combine = 39;
