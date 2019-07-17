@@ -2,7 +2,7 @@
 [{<<"erlport">>,{pkg,<<"erlport">>,<<"0.9.8">>},1},
  {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.9">>},1},
  {<<"gpb">>,{pkg,<<"gpb">>,<<"4.1.3">>},0},
- {<<"jun">>,{pkg,<<"jun">>,<<"0.1.16">>},0},
+ {<<"jun">>,{pkg,<<"jun">>,<<"0.1.17">>},0},
  {<<"lager">>,{pkg,<<"lager">>,<<"3.6.1">>},0},
  {<<"syn">>,{pkg,<<"syn">>,<<"1.6.3">>},0}]}.
 [
@@ -10,7 +10,7 @@
  {<<"erlport">>, <<"B7DC57EB87F215A671926BFBCD23E6E9C76F8653B0D072627B41431EF51C4D20">>},
  {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>},
  {<<"gpb">>, <<"FE63F312AE95CE8F1D307E04DF3C6B49A504F5C7D0A84221B02A819FEDA63BBE">>},
- {<<"jun">>, <<"D10C55A7984F0D8B7E891FDE1AD4367163898823552634C4C66F50FD1BE01C6F">>},
+ {<<"jun">>, <<"E9BCF83FC426D8A2F046A3AAE4BC7AC04C380085048D9A58CFC4484F48A75653">>},
  {<<"lager">>, <<"9D29C5FF7F926D25ECD9899990867C9152DCF34EEE65BAC8EC0DFC0D16A26E0C">>},
  {<<"syn">>, <<"E3400A6286A7C44ED0A0293D0E83A1F44AA9B1A9EC2C8D54EEE2CD1F4FF2F94E">>}]}
 ].
