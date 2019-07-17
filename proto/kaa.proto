@@ -44,7 +44,7 @@ enum funs {
     to_json = 9;
     to_datetime = 43;
     read_sql = 45;
-    read_string = 47;
+    read_string = 49;
 
     // Computations / Descriptive Stats
     sum = 1;
