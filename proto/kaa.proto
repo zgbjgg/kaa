@@ -112,6 +112,10 @@ enum funs {
 
     // Timedelta
     days = 44;
+
+    // Missing handling data
+    fillna = 50;
+    dropna = 51;
 }
 
 // for keywords in some fun
