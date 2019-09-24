@@ -136,7 +136,7 @@ random_key() ->
 parse_keywords(Keywords) ->
     lists:map(fun(#'Keywords'{key = Key, value = Value}) ->
         case Value of
-            {svalue, ValueStr} -> {list_to_atom(Key), list_to_atom(ValueStr)};
+            {svalue, ValueStr} -> {list_to_atom(Key), list_to_binary(ValueStr)};
             {ivalue, ValueInt} -> {list_to_atom(Key), ValueInt};
             {dvalue, ValueDou} -> {list_to_atom(Key), ValueDou};
             {avalue, {'KeywordValue', ArrStr, [], []}} ->
@@ -166,7 +166,7 @@ parse_argument(Argument, Pid) ->
 
 normalize_array([]) -> [];
 normalize_array([ V | Array]) when is_list(V) ->
-    [ list_to_atom(V) | normalize_array(Array) ];
+    [ list_to_binary(V) | normalize_array(Array) ];
 normalize_array([ V | Array]) when is_integer(V) ->
     [ V | normalize_array(Array) ];
 normalize_array([ V | Array]) when is_float(V) ->
