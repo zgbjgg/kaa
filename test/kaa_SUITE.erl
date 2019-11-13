@@ -170,7 +170,8 @@ test_kaa_proto_in_error([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     SumIns = common_instruction(Worker, DataFrame, sum, "unknown", []),
     {ok, PbOutSum} = kaa_main_worker:kaa_proto_in(Key, SumIns),
     #'KaaError'{error = Error} = kaa_error:decode_msg(PbOutSum, 'KaaError'),
-    ?assertEqual("exceptions.KeyError", Error).
+    [_, KeyError] = string:tokens(Error, "."),
+    ?assertMatch("KeyError", KeyError).
 
 test_kaa_proto_in_columns([{kaa_worker, Key}, {worker, Worker}, {ins, Ins}]) ->
     {ok, PbOut} = kaa_main_worker:kaa_proto_in(Key, Ins),
