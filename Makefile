@@ -40,7 +40,7 @@ stop:
 test:
 	$(REBAR3) ct --cover
 	$(REBAR3) cover
-	$(REBAR) covertool generate
+	$(REBAR3) covertool generate
 	@mv _build/test/covertool/kaa.covertool.xml cobertura.xml
 
 cover:
