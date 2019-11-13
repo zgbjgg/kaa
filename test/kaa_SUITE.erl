@@ -59,7 +59,7 @@ all() ->
      test_kaa_proto_sort,
      test_kaa_proto_sort_index,
      test_kaa_proto_iplot,
-     test_kaa_proto_pplot,
+     % test_kaa_proto_pplot,
      test_kaa_proto_seaborn,
      test_kaa_proto_in_series,
      test_kaa_proto_legacy_assignment,
