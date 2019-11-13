@@ -100,7 +100,7 @@ encode_result({ok, {?SEABORNPLOT, {'$erlport.opaque', python, _} = Plot}}) ->
     KaaResult = #'KaaResult'{ok = "ok", result = {seabornplot, binary_to_list(PlotBin)}},
     kaa_result:encode_msg(KaaResult);
 encode_result({ok, {?PLOTLY, A}})                               ->
-    PlotPickled = atom_to_list(A),
+    PlotPickled = binary_to_list(A),
     KaaResult = #'KaaResult'{ok = "ok", result = {iplot, PlotPickled}},
     kaa_result:encode_msg(KaaResult);
 encode_result({ok, I}) when is_integer(I)                       ->
@@ -136,15 +136,15 @@ random_key() ->
 parse_keywords(Keywords) ->
     lists:map(fun(#'Keywords'{key = Key, value = Value}) ->
         case Value of
-            {svalue, ValueStr} -> {list_to_atom(Key), list_to_binary(ValueStr)};
-            {ivalue, ValueInt} -> {list_to_atom(Key), ValueInt};
-            {dvalue, ValueDou} -> {list_to_atom(Key), ValueDou};
+            {svalue, ValueStr} -> {list_to_binary(Key), list_to_binary(ValueStr)};
+            {ivalue, ValueInt} -> {list_to_binary(Key), ValueInt};
+            {dvalue, ValueDou} -> {list_to_binary(Key), ValueDou};
             {avalue, {'KeywordValue', ArrStr, [], []}} ->
-                {list_to_atom(Key), normalize_array(ArrStr)};
+                {list_to_binary(Key), normalize_array(ArrStr)};
             {avalue, {'KeywordValue', [], ArrInt, []}} ->
-                {list_to_atom(Key), normalize_array(ArrInt)};
+                {list_to_binary(Key), normalize_array(ArrInt)};
             {avalue, {'KeywordValue', [], [], ArrDou}} ->
-                {list_to_atom(Key), normalize_array(ArrDou)}
+                {list_to_binary(Key), normalize_array(ArrDou)}
         end
     end, Keywords).
 
@@ -156,11 +156,10 @@ parse_argument(Argument, Pid) ->
             % if the argument is a series then check if we hold into kaa environment
             case ets:lookup(?KAA_ENVIRONMENT(Pid), Argument) of
                 [{_, Series}] -> Series;
-                _             -> list_to_atom(Argument)
+                _             -> list_to_binary(Argument)
             end;
         ArgumentInt -> ArgumentInt
     end.
-
 
 %% @hidden
 
