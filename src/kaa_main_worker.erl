@@ -6,6 +6,7 @@
 
 %% API
 -export([start_link/0,
+    start_link/1,
     get_worker/1,
     kaa_proto_in/2,
     stop_link/1]).
@@ -25,7 +26,10 @@
     key = <<"kaa">> :: binary()}).
 
 start_link() ->
-    {ok, Pid} = gen_server:start_link(?MODULE, [], []),
+    start_link(default).
+
+start_link(PyBin) ->
+    {ok, Pid} = gen_server:start_link(?MODULE, [PyBin], []),
     % register process using syn
     Key = pid_to_list(Pid),
     ok = syn:register(Key, Pid),
@@ -43,9 +47,9 @@ stop_link(Key) ->
     Pid = syn:find_by_key(Key),
     gen_server:call(Pid, stop_link).
 
-init([]) ->
+init([PyBin]) ->
     % start the py process and initializes its importing modules
-    case jun_worker:start_link() of
+    case jun_worker:start_link(PyBin) of
         {ok, JunPid} ->
             MonRef = erlang:monitor(process, JunPid),
             lager:info("initialized jun worker pid ~p", [JunPid]),
