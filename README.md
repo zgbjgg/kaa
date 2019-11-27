@@ -7,6 +7,8 @@
 [![Build Status](https://travis-ci.org/zgbjgg/kaa.svg?branch=master)](https://travis-ci.org/zgbjgg/kaa)
 [![Codecov](https://img.shields.io/codecov/c/github/zgbjgg/kaa.svg)](https://codecov.io/gh/zgbjgg/kaa)
 [![License: MIT](https://img.shields.io/github/license/zgbjgg/kaa.svg)](https://raw.githubusercontent.com/zgbjgg/kaa/master/LICENSE)
+[![Hex.pm](https://img.shields.io/hexpm/dt/kaa.svg)](https://hex.pm/packages/kaa)
+[![Hex.pm](https://img.shields.io/hexpm/dw/kaa.svg)](https://hex.pm/packages/kaa)
 
 KAA is a library written in erlang to send and receive tasks to a `JUN` worker through a protocol buffers, so then any client implementing the proto files can send messages to `JUN`.
 
