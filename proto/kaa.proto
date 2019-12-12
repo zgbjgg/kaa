@@ -58,6 +58,7 @@ enum funs {
     query = 6;
     head = 15;
     tail = 16;
+    mask = 52;
 
     // Helpers
     columns = 10;
